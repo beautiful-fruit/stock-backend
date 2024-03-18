@@ -4,7 +4,7 @@ from django.contrib.auth.hashers import make_password
 from .schemas import DiscordUserBase
 from .models import DiscordUser
 
-def authentucate(data: DiscordUserBase) -> User | None | str:
+def authenticate(data: DiscordUserBase) -> User | None | str:
     
     if not data.verified:
         return None

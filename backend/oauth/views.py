@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login
 
 from .schemas import DiscordUserBase
-from .auth import authentucate
+from .auth import authenticate
 from .discord_oauth import exchange_code, refresh_token
 import json
 
@@ -21,7 +21,7 @@ def discordLoginRedirect(request: HttpRequest) -> JsonResponse:
         response = json.dumps({"message": "Authorize Failed"})
         return HttpResponse(response, content_type="application/json", status=401)
     user_data = DiscordUserBase(**data)
-    user = authentucate(user_data)
+    user = authenticate(user_data)
     if user is None:
         response = json.dumps({"message": "Email is not Verified"})
         return HttpResponse(response, content_type="application/json", status=401)
