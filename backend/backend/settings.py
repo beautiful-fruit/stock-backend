@@ -11,15 +11,15 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import os
-
 import environ
+import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 env = environ.Env()
 BASE_DIR = Path(__file__).resolve().parent.parent
-print(BASE_DIR)
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -43,9 +43,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user',
-    'rest_framework'
+    'oauth',
+    'rest_framework',
+    'corsheaders'
+    
 ]
+
+
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SILENCED_SYSTEM_CHECKS = ['security.W019']
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+     ],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -55,12 +67,19 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
-AUTHENTICATION_BACKENDS = [
-    "user.auth.DiscordBackend",
-    "django.contrib.auth.backends.ModelBackend",
+CORS_ALLOWED_ORIGINS = [
+    f"http://localhost:{env('frontend_port')}"
 ]
+
+SIMPLE_JWT = { 
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=60), 
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=120), 
+    'AUTH_HEADER_TYPES': ('Bearer', 'JWT'), 
+}
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -134,8 +153,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# OAuth2
 
 AUTH_URL_DISCORD = env("auth_url_discord")
 CLIENT_ID = env("client_id")
