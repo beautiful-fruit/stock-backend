@@ -4,12 +4,12 @@ from django.contrib.auth.hashers import make_password
 from .schemas import DiscordUserBase
 from .models import DiscordUser
 
-def authentucate(data: DiscordUserBase) -> User | None:
+def authentucate(data: DiscordUserBase) -> User | None | str:
     
     if not data.verified:
         return None
     if User.objects.filter(username=data.id).exists():
-        return User.objects.get(username=data.id)
+        return "refresh"
     
     new_user = User.objects.create_user(
         username=data.id,
